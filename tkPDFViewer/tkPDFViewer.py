@@ -9,7 +9,8 @@ except Exception as e:
 
 class ShowPdf():
 
-    img_object_li = []
+    def __init__(self):
+        self.img_object_li = []
 
     def pdf_view(self, master, width=1200, height=600, pdf_location="", bar=True, load="after"):
 
@@ -39,7 +40,6 @@ class ShowPdf():
 
         scroll_x.config(command=self.text.xview)
         scroll_y.config(command=self.text.yview)
-
 
         def add_img():
             precentage_dicide = 0
