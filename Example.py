@@ -1,10 +1,16 @@
 from tkPDFViewer import tkPDFViewer as pdf
-from tkinter import*
+from tkinter import Tk
+from tkinter.filedialog import askopenfilename
+
 root = Tk()
 
+file = askopenfilename(title="Open PDF", defaultextension=".pdf",
+                       filetypes=[("PDF", "*.pdf"), ("All files", "*")])
+
 #create object like this.
-variable1 = pdf.ShowPdf()
+viewer = pdf.ShowPdf()
 #Add your pdf location and width and height.
-variable2 = variable1.pdf_view(root,pdf_location=r"C:\Users\DELL\Documents\Salary2020.pdf",width=50,height=100)
-variable2.pack()
+pdf_frame = viewer.pdf_view(root, pdf_location=file,
+                            width=50,height=100)
+pdf_frame.pack()
 root.mainloop()
