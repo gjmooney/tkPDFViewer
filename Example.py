@@ -9,9 +9,9 @@ file = askopenfilename(title="Open PDF", defaultextension=".pdf",
 
 if file:
     #create object like this.
-    viewer = pdf.ShowPdf()
+    viewer = pdf.ShowPdf(root)
     #Add your pdf location and width and height.
-    pdf_frame = viewer.pdf_view(root, pdf_location=file,
+    pdf_frame = viewer.pdf_view(pdf_location=file,
                                 width=50,height=100)
     pdf_frame.pack()
     root.mainloop()

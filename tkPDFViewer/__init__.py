@@ -8,39 +8,46 @@ try:
 except Exception as e:
     print(f"This error occured while importing neccesary modules or library {e}")
 
+
 class ShowPdf():
 
-    def __init__(self):
+    def __init__(self, master):
         self.img_object_li = []
 
-    def pdf_view(self, master, width=1200, height=600, pdf_location="", bar=True, load="after"):
-
-        self.frame = tk.Frame(master, width=width, height=height, bg="white")
-
+        self.frame = tk.Frame(master)
+        self.frame.grid_columnconfigure(0, weight=1)
+        self.frame.grid_rowconfigure(2, weight=1)
         scroll_y = ttk.Scrollbar(self.frame, orient=tk.VERTICAL)
         scroll_x = ttk.Scrollbar(self.frame, orient=tk.HORIZONTAL)
+        self.percentage_load = tk.StringVar(master)
 
-        scroll_x.pack(fill=tk.X, side=tk.BOTTOM)
-        scroll_y.pack(fill=tk.Y, side=tk.RIGHT)
-
-        percentage_view = 0
-        percentage_load = tk.StringVar(master)
-
-        if bar and load == "after":
-            self.display_msg = ttk.Label(textvariable=percentage_load)
-            self.display_msg.pack(pady=10)
-
-            loading = ttk.Progressbar(self.frame, orient=tk.HORIZONTAL,
-                                      length=100, mode='determinate')
-            loading.pack(side=tk.TOP, fill=tk.X)
+        self.display_msg = ttk.Label(self.frame, textvariable=self.percentage_load)
+        self.display_msg.grid(row=0, column=0, pady=10)
+        self.display_msg.grid_remove()
+        self.loading = ttk.Progressbar(self.frame, orient=tk.HORIZONTAL,
+                                       length=100, mode='determinate')
+        self.loading.grid(row=1, column=0, sticky="ew")
+        self.loading.grid_remove()
 
         self.text = tk.Text(self.frame, yscrollcommand=scroll_y.set,
-                            xscrollcommand=scroll_x.set,
-                            width=width, height=height)
-        self.text.pack(side="left")
+                            xscrollcommand=scroll_x.set)
+        self.text.grid(row=2, column=0, sticky="esnw")
 
+        scroll_x.grid(row=3, column=0, sticky="ew")
+        scroll_y.grid(row=2, column=1, sticky="ns")
         scroll_x.config(command=self.text.xview)
         scroll_y.config(command=self.text.yview)
+
+
+    def pdf_view(self, width=1200, height=600, pdf_location="", bar=True, load="after"):
+
+        # self.frame.configure(width=width, height=height)
+
+        if bar and load == "after":
+            self.display_msg.grid()
+            self.loading.grid()
+
+        self.text.configure(width=width, height=height)  # /!\ different units than in self.frame.configure(width=width, height=height)
 
         def add_img():
             precentage_dicide = 0
@@ -55,11 +62,11 @@ class ShowPdf():
                 if bar and load == "after":
                     precentage_dicide = precentage_dicide + 1
                     percentage_view = (float(precentage_dicide)/float(len(open_pdf))*float(100))
-                    loading['value'] = percentage_view
-                    percentage_load.set(f"Please wait!, your pdf is loading {int(math.floor(percentage_view))}%")
+                    self.loading['value'] = percentage_view
+                    self.percentage_load.set(f"Please wait!, your pdf is loading {int(math.floor(percentage_view))}%")
             if bar and load == "after":
-                loading.pack_forget()
-                self.display_msg.pack_forget()
+                self.loading.grid_remove()
+                self.display_msg.grid_remove()
 
             for i in self.img_object_li:
                 self.text.image_create(tk.END, image=i)
@@ -71,7 +78,7 @@ class ShowPdf():
             t1.start()
 
         if load == "after":
-            master.after(250, start_pack)
+            self.frame.after(250, start_pack)
         else:
             start_pack()
 
@@ -85,9 +92,9 @@ def main():
 
     root = tk.Tk()
     #create object like this.
-    viewer = ShowPdf()
+    viewer = ShowPdf(root)
     #Add your pdf location and width and height.
-    pdf_frame = viewer.pdf_view(root, pdf_location=sys.argv[1],
+    pdf_frame = viewer.pdf_view(pdf_location=sys.argv[1],
                                 width=50, height=100)
-    pdf_frame.pack()
+    pdf_frame.pack(fill=tk.BOTH, expand=True)
     root.mainloop()
