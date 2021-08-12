@@ -33,15 +33,23 @@ class ShowPdf():
         scroll_y = ttk.Scrollbar(self.frame, orient=tk.VERTICAL)
         scroll_x = ttk.Scrollbar(self.frame, orient=tk.HORIZONTAL)
         self.text = tk.Text(self.frame, yscrollcommand=scroll_y.set,
-                            xscrollcommand=scroll_x.set)
+                            xscrollcommand=scroll_x.set, state=tk.DISABLED)
         self.text.grid(row=2, column=0, sticky="esnw")
         scroll_x.grid(row=3, column=0, sticky="ew")
         scroll_y.grid(row=2, column=1, sticky="ns")
         scroll_x.config(command=self.text.xview)
         scroll_y.config(command=self.text.yview)
 
+    def clear(self):
+        """Clear PDF preview."""
+        self.img_object_li.clear()
+        self.text.configure(state=tk.NORMAL)
+        self.text.delete("1.0", "end")
+        self.text.configure(state=tk.DISABLED)
 
     def pdf_view(self, width=1200, height=600, pdf_location="", bar=True, load="after"):
+
+        self.clear()
 
         if bar and load == "after":
             self.display_msg.grid()
@@ -57,6 +65,7 @@ class ShowPdf():
         return self.frame
 
     def add_img(self, pdf_location, bar=True, load="after"):
+        self.text.configure(state=tk.NORMAL)
         precentage_dicide = 0
         open_pdf = fitz.open(pdf_location)
 
@@ -78,7 +87,7 @@ class ShowPdf():
         for i in self.img_object_li:
             self.text.image_create(tk.END, image=i)
             self.text.insert(tk.END, "\n\n")
-        self.text.configure(state="disabled")
+        self.text.configure(state=tk.DISABLED)
 
     def start_load(self, pdf_location, bar, load):
         t1 = Thread(target=self.add_img, args=(pdf_location, bar, load))
